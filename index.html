@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Corex Docs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    :root{
+      --bg:#0A0A0A;
+      --panel:#111111;
+      --text:#00CC99;
+      --blue:#1E90FF;
+      --gold:#FFD700;
+      --comment:#888888;
+      --radius:12px;
+    }
+    *{box-sizing:border-box}
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      line-height: 1.65;
+    }
+    header { text-align:center; padding:30px 15px; }
+    header img { width:100px; max-width:30%; border-radius:var(--radius); }
+    h1,h2,h3{ color:var(--blue); text-shadow:0 0 10px var(--text); margin:0.3em 0; }
+    p{ margin:0.6em 0; }
+    nav { text-align:center; padding:10px; }
+    nav a { color:var(--text); margin:0 10px; text-decoration:none; font-weight:700; }
+    section { padding:20px; max-width:1000px; margin:20px auto; border-radius:var(--radius); box-shadow:0 0 15px var(--text); background:transparent; }
+
+    /* Код и подсветка */
+    pre {
+      padding:16px 18px;
+      border-radius:var(--radius);
+      overflow-x:auto; /* горизонтальный скролл */
+      -webkit-overflow-scrolling:touch;
+      font-family:Consolas, Menlo, monospace;
+      background:var(--panel);
+      box-shadow:0 0 15px var(--text);
+      color:#fff;
+    }
+    code{ font-size:0.92em; white-space:pre; }
+    .keyword{ color:var(--blue); font-weight:700; }
+    .string{ color:var(--gold); }
+    .function{ color:var(--text); }
+    .comment{ color:var(--comment); font-style:italic; }
+    .number{ color:#B084EB; }
+    .boolean{ color:#FF7F7F; }
+    .operator{ color:#9CDCFE; }
+
+    /* API карточки */
+    .api-block{ margin:12px 0; border-radius:var(--radius); box-shadow:0 0 10px var(--text); overflow:hidden; }
+    .api-btn{ width:100%; background:var(--blue); color:#fff; font-weight:bold; padding:12px; border:none; text-align:left; cursor:pointer; font-size:1em; }
+    .api-content{ display:none; padding:12px; background:var(--panel); color:var(--text); }
+    .api-block.active .api-content{ display:block; }
+
+    footer {
+      text-align:center; padding:15px; color:var(--text);
+      text-shadow:0 0 10px var(--text); border-radius:var(--radius);
+      margin:30px auto; max-width:1000px;
+    }
+    @media (max-width:720px){
+      h1{font-size:1.6em}
+      nav{display:flex; flex-wrap:wrap; justify-content:center; gap:8px}
+      nav a{margin:0 6px; font-size:0.9em}
+      section{padding:16px; margin:14px auto}
+      pre,code{font-size:0.86em}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🧠 Corex</h1>
+  <p>Минималистичный стейт‑менеджер для Core</p>
+  <p>⚡ Реактивность, интеллект, доступен прямо из Core</p>
+</header>
+
+<nav>
+  <a href="#start">Старт</a>
+  <a href="#examples">Примеры</a>
+  <a href="#api">API</a>
+</nav>
+
+<section id="start">
+  <h2>🚀 Быстрый старт</h2>
+  <p>Corex встроен в Core и доступен напрямую — никаких лишних пакетов или сборки.</p>
+  <pre><code><span class="comment">// строка подключения</span>
+<span class="keyword">import</span> { createStore, StoreProvider, useStore } <span class="keyword">from</span> <span class="string">"core/corex"</span>;
+</code></pre>
+</section>
+
+<section id="examples">
+  <h2>🔗 Примеры стейта</h2>
+
+  <h3>Счётчик</h3>
+  <pre><code><span class="keyword">function</span> <span class="function">counterReducer</span>(state, action) {
+  <span class="keyword">switch</span>(action.type){
+    <span class="keyword">case</span> <span class="string">"increment"</span>: <span class="keyword">return</span> { count: state.count <span class="operator">+</span> <span class="number">1</span> };
+    <span class="keyword">case</span> <span class="string">"decrement"</span>: <span class="keyword">return</span> { count: state.count <span class="operator">-</span> <span class="number">1</span> };
+    <span class="keyword">default</span>: <span class="keyword">return</span> state;
+  }
+}
+<span class="keyword">const</span> counterStore <span class="operator">=</span> <span class="function">createStore</span>(counterReducer, { count: <span class="number">0</span> });
+</code></pre>
+
+  <h3>Авторизация</h3>
+  <pre><code><span class="keyword">function</span> <span class="function">authReducer</span>(state, action) {
+  <span class="keyword">switch</span>(action.type){
+    <span class="keyword">case</span> <span class="string">"login"</span>: <span class="keyword">return</span> { user: action.payload };
+    <span class="keyword">case</span> <span class="string">"logout"</span>: <span class="keyword">return</span> { user: <span class="keyword">null</span> };
+    <span class="keyword">default</span>: <span class="keyword">return</span> state;
+  }
+}
+<span class="keyword">const</span> authStore <span class="operator">=</span> <span class="function">createStore</span>(authReducer, { user: <span class="keyword">null</span> });
+</code></pre>
+
+  <h3>UI‑состояние</h3>
+  <pre><code><span class="keyword">function</span> <span class="function">uiReducer</span>(state, action) {
+  <span class="keyword">switch</span>(action.type){
+    <span class="keyword">case</span> <span class="string">"openModal"</span>: <span class="keyword">return</span> { <span class="operator">...</span>state, modalOpen: <span class="keyword">true</span> };
+    <span class="keyword">case</span> <span class="string">"closeModal"</span>: <span class="keyword">return</span> { <span class="operator">...</span>state, modalOpen: <span class="keyword">false</span> };
+    <span class="keyword">default</span>: <span class="keyword">return</span> state;
+  }
+}
+<span class="keyword">const</span> uiStore <span class="operator">=</span> <span class="function">createStore</span>(uiReducer, { modalOpen: <span class="keyword">false</span> });
+</code></pre>
+
+  <h3>Данные</h3>
+  <pre><code><span class="keyword">function</span> <span class="function">dataReducer</span>(state, action) {
+  <span class="keyword">switch</span>(action.type){
+    <span class="keyword">case</span> <span class="string">"setData"</span>: <span class="keyword">return</span> { <span class="operator">...</span>state, items: action.payload };
+    <span class="keyword">default</span>: <span class="keyword">return</span> state;
+  }
+}
+<span class="keyword">const</span> dataStore <span class="operator">=</span> <span class="function">createStore</span>(dataReducer, { items: [] });
+</code></pre>
+
+  <h3>Middleware</h3>
+  <pre><code><span class="keyword">const</span> logger <span class="operator">=</span> ({ getState }) <span class="operator">=&gt;</span> next <span class="operator">=&gt;</span> action <span class="operator">=&gt;</span> {
+  console.log(<span class="string">"dispatching"</span>, action);
+  <span class="keyword">const</span> result <span class="operator">=</span> next(action);
+  console.log(<span class="string">"next state"</span>, getState());
+  <span class="keyword">return</span> result;
+};
+</code></pre>
+
+  <h3>Async Actions</h3>
+  <pre><code><span class="keyword">const</span> fetchData <span class="operator">=</span> () <span class="operator">=&gt;</span> <span class="keyword">async</span> (dispatch) <span class="operator">=&gt;</span> {
+  <span class="keyword">const</span> data <span class="operator">=</span> <span class="keyword">await</span> fetch(<span class="string">"/api/value"</span>).then(r <span class="operator">=&gt;</span> r.json());
+  dispatch({ type: <span class="string">"setData"</span>, payload: data });
+};
+</code></pre>
+
+  <h3>Связка auth + counter</h3>
+  <pre><code><span class="comment">// счётчик доступен только авторизованным пользователям</span>
+<span class="keyword">function</span> <span class="function">Counter</span>() {
+  <span class="keyword">const</span> user  <span class="operator">=</span> <span class="function">useStore</span>(s <span class="operator">=&gt;</span> s.user,  authStore);
+  <span class="keyword">const</span> count <span class="operator">=</span> <span class="function">useStore</span>(s <span class="operator">=&gt;</span> s.count, counterStore);
+
+  <span class="keyword">if</span> (<span class="operator">!</span>user) <span class="keyword">return</span> <span class="string">&lt;p&gt;Войдите, чтобы пользоваться счётчиком&lt;/p&gt;</span>;
+
+  <span class="keyword">return</span> (
+    <span class="string">&lt;div&gt;
+      &lt;p&gt;Счётчик: {count}&lt;/p&gt;
+      &lt;button onClick={() =&gt; counterStore.dispatch({ type: "increment" })}&gt;+&lt;/button&gt;
+      &lt;button onClick={() =&gt; counterStore.dispatch({ type: "decrement" })}&gt;-&lt;/button&gt;
+    &lt;/div&gt;</span>
+  );
+}
+</code></pre>
+</section>
+
+<section id="api">
+  <h2>📘 API использования</h2>
+  <p>Все импорты выполняются из <strong>"core/corex"</strong>. Нажмите на карточку, чтобы раскрыть описание и примеры.</p>
+
+  <div class="api-block">
+    <button class="api-btn">createStore(reducer, initialState, middleware?)</button>
+    <div class="api-content">
+      <p><strong>Описание:</strong> Создаёт стор: хранит состояние, принимает экшены, поддерживает middleware и async‑dispatch.</p>
+      <pre><code>const store = createStore(reducer, { x: 0 }, [logger])</code></pre>
+    </div>
+  </div>
+
+  <div class="api-block">
+    <button class="api-btn">store.getState()</button>
+    <div class="api-content">
+      <p><strong>Описание:</strong> Возвращает текущее состояние стора без подписки.</p>
+      <pre><code>const x = store.getState().x</code></pre>
+    </div>
+  </div>
+
+  <div class="api-block">
+    <button class="api-btn">store.dispatch(action)</button>
+    <div class="api-content">
+      <p><strong>Описание:</strong> Отправляет экшен. Поддерживает объекты и функции (thunk‑подобные async действия).</p>
+      <pre><code>store.dispatch({ type: "increment" })
+store.dispatch(fetchData())</code></pre>
+    </div>
+  </div>
+
+  <div class="api-block">
+    <button class="api-btn">useStore(selector, store?)</button>
+    <div class="api-content">
+      <p><strong>Описание:</strong> Подписка на часть состояния. Если <code>store</code> не передан, используется стор из контекста.</p>
+      <pre><code>const count = useStore(s => s.count)
+const user  = useStore(s => s.user, authStore)</code></pre>
+    </div>
+  </div>
+
+  <div class="api-block">
+    <button class="api-btn">StoreProvider</button>
+    <div class="api-content">
+      <p><strong>Описание:</strong> Пробрасывает стор вниз по дереву компонентов через контекст.</p>
+      <pre><code>&lt;StoreProvider store={counterStore}&gt;
+  &lt;App /&gt;
+&lt;/StoreProvider&gt;</code></pre>
+    </div>
+  </div>
+
+  <div class="api-block">
+    <button class="api-btn">Middleware</button>
+    <div class="api-content">
+      <p><strong>Описание:</strong> Функции-посредники для перехвата экшенов: логирование, аналитика, сайд‑эффекты.</p>
+      <pre><code>const logger = ({getState}) => next => action => {
+  console.log("dispatching", action)
+  const result = next(action)
+  console.log("next state", getState())
+  return result
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="api-block">
+    <button class="api-btn">Async dispatch</button>
+    <div class="api-content">
+      <p><strong>Описание:</strong> Если в <code>dispatch</code> передать функцию, она будет вызвана как <code>(dispatch, getState)</code> — удобно для асинхронной логики.</p>
+      <pre><code>store.dispatch(async (dispatch, getState) => {
+  const data = await fetch("/api/value").then(r => r.json())
+  dispatch({ type: "setData", payload: data })
+})</code></pre>
+    </div>
+  </div>
+</section>
+
+<footer>
+  💙 Лицензия: MIT — свободно используйте, улучшайте и делитесь.
+</footer>
+
+<script>
+  // Раскрытие API карточек
+  document.querySelectorAll('.api-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.parentElement.classList.toggle('active');
+    });
+  });
+</script>
+
+</body>
+      </html>
