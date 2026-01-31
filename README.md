@@ -11,12 +11,6 @@
 
              🔷 COREX 🔹
 ```
-
-
-Corex.js
-🔷 Minimalistic State Manager for Core  
-🔹 Simple • 🔵 Flexible • 🔹 Lightweight  
-
 ---
 
 🔵 Features
