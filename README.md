@@ -23,14 +23,14 @@ Corex.js
 🔷 Quick Start
 Copy corex.js into your project and import it in your app.
 
-`js
+```js
 import { createStore, combineReducers, StoreProvider, useStore } from "./corex.js";
-`
+```
 
 ---
 
 🔵 Example Usage
-`js
+```js
 // Reducers
 function counterReducer(state = { count: 0 }, action) {
   switch (action.type) {
@@ -63,7 +63,7 @@ function Counter() {
     </div>
   );
 }
-`
+```
 
 ---
 
