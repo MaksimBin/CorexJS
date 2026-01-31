@@ -1,6 +1,42 @@
-# CorexJS
+`markdown
 
-// Corex.js — минималистичный стейт‑менеджер для Core
+🌌 Corex.js
+
+`
+                             
+  / |       |  \/  | _ 
+ | |    /  \| '/  \ | |\/| |/ _ \
+ | || () | | |  / | |  | |  /
+  \|\/||  \| ||  ||\|
+`
+
+> Минималистичный стейт‑менеджер для Core  
+> 🔷 Простота • 🔹 Гибкость • 🔵 Лёгкость
+
+---
+
+🔵 Возможности
+- 🔹 createStore — создание стора  
+- 🔹 getState — доступ к состоянию  
+- 🔹 dispatch — поддержка async / thunk  
+- 🔹 subscribe — подписка на изменения  
+- 🔹 useStore — хук для компонентов  
+- 🔹 StoreProvider — контекст для проброса стора  
+- 🔹 middleware — расширяемая логика (цепочка)  
+- 🔹 combineReducers — объединение редьюсеров
+
+---
+
+🔷 Установка
+`bash
+npm install corex.js
+`
+
+---
+
+🔵 Файл corex.js (скопируй и положи в репозиторий)
+`js
+// corex.js — минималистичный стейт‑менеджер для Core
 // Поддержка createStore, getState, dispatch (с async/thunk), subscribe,
 // useStore, StoreProvider, middleware и combineReducers
 
@@ -28,7 +64,7 @@ export function createStore(reducer, initialState, middlewares = []) {
     return action;
   };
 
-  // Оборачиваем middleware
+  // Оборачиваем middleware (как в Redux)
   middlewares.slice().reverse().forEach((mw) => {
     dispatch = mw({ getState, dispatch })(dispatch);
   });
@@ -69,10 +105,13 @@ export function useStore(selector, externalStore) {
   useEffect(() => {
     const unsubscribe = store.subscribe(() => {
       const newSlice = selector(store.getState());
-      setSlice(newSlice);
+      // Предотвращаем лишние ререндеры
+      if (!Object.is(slice, newSlice)) {
+        setSlice(newSlice);
+      }
     });
     return unsubscribe;
-  }, [store]);
+  }, [store, selector, slice]);
 
   return slice;
 }
@@ -84,12 +123,24 @@ export const logger = ({ getState }) => (next) => (action) => {
   console.log("next state", getState());
   return result;
 };
+`
 
-#Использование
+---
 
-import { createStore, combineReducers, StoreProvider, useStore, logger } from "./corex.js";
+🔵 Пример использования (в одном файле для быстрого копирования)
+`js
+// app-example.js — пример использования Corex.js в одном файле
 
-// редьюсеры
+// --- импортируем локально сохранённый corex.js
+import {
+  createStore,
+  combineReducers,
+  StoreProvider,
+  useStore,
+  logger
+} from "./corex.js";
+
+// Редьюсеры
 function counterReducer(state = { count: 0 }, action) {
   switch (action.type) {
     case "increment": return { count: state.count + 1 };
@@ -106,31 +157,36 @@ function authReducer(state = { user: null }, action) {
   }
 }
 
-// объединяем
+// Собираем root reducer и стор
 const rootReducer = combineReducers({
   counter: counterReducer,
   auth: authReducer
 });
 
-// создаём стор
-const store = createStore(rootReducer, { counter: { count: 0 }, auth: { user: null } }, [logger]);
+const store = createStore(
+  rootReducer,
+  { counter: { count: 0 }, auth: { user: null } },
+  [logger]
+);
 
-// компонент
+// Компонент счётчика
 function Counter() {
+  // Можно передать store явно или использовать StoreProvider
   const count = useStore(s => s.counter.count, store);
   const user = useStore(s => s.auth.user, store);
 
-  if (!user) return <p>Войдите, чтобы пользоваться счётчиком</p>;
+  if (!user) return <p>🔹 Войдите, чтобы пользоваться счётчиком</p>;
 
   return (
     <div>
-      <p>Счётчик: {count}</p>
+      <p>🔵 Счётчик: {count}</p>
       <button onClick={() => store.dispatch({ type: "increment" })}>+</button>
       <button onClick={() => store.dispatch({ type: "decrement" })}>-</button>
     </div>
   );
 }
 
+// App
 function App() {
   return (
     <StoreProvider store={store}>
@@ -138,3 +194,42 @@ function App() {
     </StoreProvider>
   );
 }
+
+// Пример асинхронного действия (thunk)
+function fetchUserThunk(userId) {
+  return async (dispatch, getState) => {
+    dispatch({ type: "userfetchstart" });
+    try {
+      // пример: const res = await fetch(/api/users/${userId});
+      // const data = await res.json();
+      const data = { id: userId, name: "Demo User" }; // заглушка
+      dispatch({ type: "login", payload: data });
+    } catch (err) {
+      dispatch({ type: "userfetcherror", payload: err });
+    }
+  };
+}
+
+// Использование thunk
+store.dispatch(fetchUserThunk(1));
+`
+
+---
+
+🔷 Рекомендации по улучшению
+- 🔹 Оптимизация подписки: сравнивать слайсы через Object.is или shallowEqual чтобы избежать лишних ререндеров.  
+- 🔹 Memoize селекторов: использовать reselect‑подобный подход для тяжёлых селекторов.  
+- 🔹 DevTools: интеграция с Redux DevTools через middleware.  
+- 🔹 Типизация: добавить TypeScript‑типы для Action, Reducer, Store.  
+- 🔹 Batching: объединять последовательные диспатчи для уменьшения обновлений.
+
+---
+
+🔵 Лицензия
+MIT © Corex.js
+
+---
+
+🔹 Вклад
+PRs приветствуются: оптимизация селекторов, TypeScript‑типизация, интеграция DevTools. Пусть Corex остаётся лёгким и понятным, но мощным.
+`
