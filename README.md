@@ -1,6 +1,6 @@
 
 
-`markdown
+
 
 Corex.js
 🔷 Minimalistic State Manager for Core  
@@ -78,5 +78,5 @@ function Counter() {
 
 🔷 License
 MIT © Corex.js
-`
+
 
