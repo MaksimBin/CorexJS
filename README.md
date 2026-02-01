@@ -1,4 +1,8 @@
 # Corex.js  
+<h1 align="center">
+  <img src="corex-banner.jpeg" alt="Maxim Frontend Developer Banner" />
+</h1>
+---
 🔷 Minimalistic State Manager for Core  
 🔹 Simple • 🔵 Flexible • 🔹 Lightweight  
 
